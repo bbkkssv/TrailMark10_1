@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-#if canImport(WatchConnectivity)
+#if canImport(WatchConnectivity) // This will result in an import only for the watch os
 import WatchConnectivity
 #endif
 
