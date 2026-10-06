@@ -446,9 +446,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 33PDVR6SVF;
 				ENABLE_PREVIEWS = YES;
-				EXCLUDED_SOURCE_FILE_NAMES = Info.plist;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "TrailMarkWatchCH10 Watch App/Info.plist";
+				INFOPLIST_FILE = "TrailMarkWatchCH10-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TrailMarkWatchCH10;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "TrailMark reads your heart rate, steps and energy on your wrist.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TrailMark saves your workouts to the Health app.";
@@ -489,9 +488,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 33PDVR6SVF;
 				ENABLE_PREVIEWS = YES;
-				EXCLUDED_SOURCE_FILE_NAMES = Info.plist;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "TrailMarkWatchCH10 Watch App/Info.plist";
+				INFOPLIST_FILE = "TrailMarkWatchCH10-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TrailMarkWatchCH10;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "TrailMark reads your heart rate, steps and energy on your wrist.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TrailMark saves your workouts to the Health app.";

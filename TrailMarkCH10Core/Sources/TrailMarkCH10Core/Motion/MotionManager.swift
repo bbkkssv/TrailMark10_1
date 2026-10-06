@@ -32,6 +32,8 @@ public final class MotionManager {
     private let activityManager = CMMotionActivityManager() // Approximate current activity
     private let motionManager = CMMotionManager() // This interfaces is to get raw data from Acc, Giro, and Magnetometer
     
+    private let accelerometerUpdateInterval: TimeInterval = 0.5
+    
     public init() {}
     
     public var isShakeDetected: Bool {
@@ -73,7 +75,7 @@ public final class MotionManager {
     
     public func startAccelerometerUpdates() {
         guard motionManager.isDeviceMotionAvailable else { return }
-        motionManager.deviceMotionUpdateInterval = 0.1 // tenth of 1 = 10hz
+        motionManager.deviceMotionUpdateInterval = accelerometerUpdateInterval
         
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
             guard let data = motion?.userAcceleration else { return }
@@ -99,6 +101,8 @@ public final class MotionManager {
     }
     
     public func stopAllUpdates() {
+        activityManager.stopActivityUpdates()
+        motionManager.stopDeviceMotionUpdates()
         pedometer.stopUpdates()
     }
 }

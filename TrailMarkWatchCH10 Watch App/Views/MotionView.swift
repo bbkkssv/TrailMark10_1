@@ -34,7 +34,7 @@ struct MotionView: View {
             model.motion.startAccelerometerUpdates()
         }
         .onDisappear {
-            
+            model.motion.stopAllUpdates()
         }
     }
 

@@ -27,6 +27,11 @@ struct ContentView: View {
                     } label: {
                         Label("Quick Log", systemImage: "figure.walk")
                     }
+                    NavigationLink {
+                        MotionView()
+                    } label: {
+                        Label("Motion", systemImage: "sensor.tag.radiowaves.forward")
+                    }
                 }
             }
         }

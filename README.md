@@ -33,3 +33,18 @@ Workout Processing background mode is enabled for the Watch target so the workou
 The part I still have to prove with screenshots is the real device test, because this assignment needs a physical Apple Watch. I would confirm it by starting a walk on the watch, backgrounding the app, finishing the walk, and then opening the Health app to show the saved workout.
 
 The capability that keeps it alive in the background is Workout Processing mode.
+
+## Assignment 3 - Make it Last
+
+I profiled the Watch motion screen: activity detection, pedometer updates, accelerometer updates, and the UI that shows cadence/steps/acceleration.
+
+I made two optimizations:
+
+| Optimization | Before | After | Tradeoff |
+|---|---|---|---|
+| Lower accelerometer sampling | `0.1` seconds, about 10 Hz | `0.5` seconds, about 2 Hz | The motion number updates less often, but it is still fine for a glanceable watch screen and should use less battery. |
+| Stop sensors when leaving Motion | Pedometer stopped, but activity and device motion kept running | Pedometer, activity updates, and device motion all stop in `onDisappear` | Returning to the screen has to restart the sensors, but background sensor work is reduced. |
+
+The exact before/after Instruments numbers are in my separate PDF with screenshots. I used Instruments instead of guessing because battery and CPU changes need real measurements.
+
+The main tradeoff I chose was less frequent live motion detail in exchange for lower energy use. For this app that is okay, because the Motion screen is just a status view, not a high-speed game or medical monitor.
