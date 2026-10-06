@@ -15,6 +15,7 @@ struct ContentView: View {
             RecoveryView()
                 .tabItem { Label("Recovery", systemImage: "bed.double.fill") }
         }
+        .preferredColorScheme(.dark)
         .task {
             await model.health.requestAuthorization()
             await model.health.refreshTodaysSummary()
