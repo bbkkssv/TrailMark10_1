@@ -13,6 +13,11 @@ struct ContentView: View {
                 // Navigation Menu
                 Section {
                     NavigationLink {
+                        GoWalkView()
+                    } label: {
+                        Label("Go Walk", systemImage: "figure.walk.circle.fill")
+                    }
+                    NavigationLink {
                         WristMemoView()
                     } label: {
                         Label("Voice Memo", systemImage: "mic.fill")

@@ -10,14 +10,16 @@ final class WatchModel {
     let health = HealthKitManager()
     let media = MediaStore()
     let motion = MotionManager()
+    let workout = WorkoutSessionManager()
     let connectivity = ConnectivityManager.shared
+    
+    private(set) var lastFinishedWorkout: WorkoutRecord?
 
     init() {
-        // Session 3.2 adds `WorkoutSessionManager`. Its finish hook plugs in here:
-        //
-        //     workout.onFinish = { [weak self] record in
-        //         self?.syncFinished(workout: record)
-        //     }
+        workout.onFinish = { [weak self] record in
+            self?.lastFinishedWorkout = record
+            self?.syncFinished(workout: record)
+        }
         connectivity.activate()
     }
 

@@ -446,13 +446,18 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 33PDVR6SVF;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "TrailMarkWatchCH10 Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TrailMarkWatchCH10;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "TrailMark reads your heart rate, steps and energy on your wrist.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TrailMark saves your workouts to the Health app.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TrailMark records voice memos on your wrist.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "TrailMark reads motion data to detect your cadence and activity.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKBackgroundModes = (
+					"workout-processing",
+				);
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ramsesg.TrailMarkCH10;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -484,13 +489,18 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 33PDVR6SVF;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "TrailMarkWatchCH10 Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TrailMarkWatchCH10;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "TrailMark reads your heart rate, steps and energy on your wrist.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TrailMark saves your workouts to the Health app.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "TrailMark records voice memos on your wrist.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "TrailMark reads motion data to detect your cadence and activity.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKBackgroundModes = (
+					"workout-processing",
+				);
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ramsesg.TrailMarkCH10;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
