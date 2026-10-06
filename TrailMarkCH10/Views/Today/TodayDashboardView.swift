@@ -9,9 +9,11 @@ struct TodayDashboardView: View {
             Group {
                 switch model.health.currentAuthStatus {
                 case .authorized:
+                    summary
+                case .unavailable:
                     ContentUnavailableView(
                         "Health data unavailable",
-                        systemImage: "hearth.slash",
+                        systemImage: "heart.slash",
                         description: Text("This device can't provide health data.")
                     )
                 case .denied:
@@ -27,11 +29,11 @@ struct TodayDashboardView: View {
                             }
                         }
                     }
-                default:
+                case .unknown, .requesting:
                     summary
                 }
             }
-            .navigationTitle("Todays Data")
+            .navigationTitle("Today's Data")
             .task { await model.health.refreshTodaysSummary() }
             .refreshable { await model.health.refreshTodaysSummary() }
         }

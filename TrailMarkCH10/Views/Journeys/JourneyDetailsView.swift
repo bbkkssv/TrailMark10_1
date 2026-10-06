@@ -96,7 +96,7 @@ struct JourneyDetailsView: View {
             LabeledContent("Duration", value: workout.durationText)
             LabeledContent("Active Energy", value: "\(Int(workout.activeEnergyKcal)) kcal")
             if let hr = workout.averageHeartRate {
-                LabeledContent("Avg. Hearth Rate", value: "\(Int(hr)) bpm").font(.headline)
+                LabeledContent("Avg. Heart Rate", value: "\(Int(hr)) bpm").font(.headline)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -108,7 +108,7 @@ struct JourneyDetailsView: View {
     private var memoSection: some View {
         if !memos.isEmpty {
             VStack(alignment: .leading) {
-                Text("Captured algong the way").font(.headline)
+                Text("Captured along the way").font(.headline)
                 ForEach(memos) { memo in
                     NavigationLink(value: memo) { MemoRow(memo: memo) }
                 }

@@ -20,6 +20,20 @@ import WatchConnectivity
 // sendMessage (live) is deliberately avoided: it only works while the counterpart
 // is reachable RIGHT NOW. A phone in a pocket is backgrounded, so the message
 // fails instead of waiting in a queue.
+//
+// Phone -> watch: start or end the workout that tracks a journey.
+public struct WorkoutControl: Codable, Sendable, Equatable {
+    public enum Command: String, Codable, Sendable { case start, end }
+
+    public let command: Command
+    public let journeyID: UUID
+
+    public init(_ command: Command, journeyID: UUID) {
+        self.command = command
+        self.journeyID = journeyID
+    }
+}
+
 @MainActor
 @Observable
 public final class ConnectivityManager: NSObject {
@@ -46,13 +60,14 @@ public final class ConnectivityManager: NSObject {
     // App-supplied sinks. Each app wires these once at launch.
     public var onReceiveWorkout: ((WorkoutRecord) -> Void)?
     public var onReceiveJourney: ((Journey) -> Void)?
+    public var onReceiveWorkoutControl: ((WorkoutControl) -> Void)?
     /// Called when a media file arrives: a copy of the file we own, plus the memo
     /// metadata. The handler is expected to move it in and `register` it with the
     /// MediaStore.
     public var onReceiveMediaFile: ((URL, MediaMemo) -> Void)?
 
     private enum PayloadType: String {
-        case summary, workout, journey, memo
+        case summary, workout, journey, memo, workoutControl
     }
 
     #if canImport(WatchConnectivity)
@@ -108,6 +123,27 @@ public final class ConnectivityManager: NSObject {
     /// Queue a whole journey (route + memo IDs + workout) for guaranteed delivery.
     public func sync(journey: Journey) {
         send(.journey, encoding: journey)
+    }
+
+    /// Tell the watch to start / end a journey's workout. Sent live when the watch app
+    /// is running so it reacts immediately; queued if it isn't or the live send fails.
+    public func send(workoutControl: WorkoutControl) {
+        #if canImport(WatchConnectivity)
+        guard canSend,
+              let session,
+              let data = try? JSONEncoder().encode(workoutControl) else { return }
+        guard session.isReachable else {
+            send(.workoutControl, encoding: workoutControl)
+            return
+        }
+
+        session.sendMessage(
+            ["type": PayloadType.workoutControl.rawValue, "payload": data],
+            replyHandler: nil
+        ) { [weak self] _ in
+            Task { @MainActor in self?.send(.workoutControl, encoding: workoutControl) }
+        }
+        #endif
     }
 
     /// Transfer a media file with its memo metadata attached ("pocket sync").
@@ -233,6 +269,14 @@ extension ConnectivityManager: WCSessionDelegate {
         handle(dictionary: userInfo)
     }
 
+    // Live control messages, used for immediate workout start/end commands.
+    nonisolated public func session(
+        _ session: WCSession,
+        didReceiveMessage message: [String: Any]
+    ) {
+        handle(dictionary: message)
+    }
+
     // Incoming media file.
     nonisolated public func session(_ session: WCSession, didReceive file: WCSessionFile) {
         // Read the metadata here: `[String: Any]` isn't Sendable, so only the
@@ -280,6 +324,10 @@ extension ConnectivityManager: WCSessionDelegate {
             case .journey:
                 if let journey = try? JSONDecoder().decode(Journey.self, from: data) {
                     self.onReceiveJourney?(journey)
+                }
+            case .workoutControl:
+                if let workoutControl = try? JSONDecoder().decode(WorkoutControl.self, from: data) {
+                    self.onReceiveWorkoutControl?(workoutControl)
                 }
             case .memo:
                 break // memos arrive as files, handled above

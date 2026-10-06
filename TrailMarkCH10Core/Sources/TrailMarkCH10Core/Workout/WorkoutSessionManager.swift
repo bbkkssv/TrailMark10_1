@@ -15,25 +15,47 @@ final class WorkoutSessionManager: NSObject {
     public private(set) var activeEnergy: Double = 0.0
     public private(set) var distanceMeters: Double = 0.0
     public private(set) var startDate: Date?
+    public private(set) var journeyID: UUID?
     
     // Callback function that will be executed once the workout is completed by the user
     public var onFinish: ((WorkoutRecord) -> Void)?
     
     private let store = HKHealthStore()
-    private let session: HKWorkoutSession?
-    private let builder: HKWorkoutBuilder?
+    private var session: HKWorkoutSession?
+    private var builder: HKWorkoutBuilder?
     
     public override init() { super.init() }
     
     public var elapsed: TimeInterval {
-        guard let startDate else { return }
+        guard let startDate else { return 0 }
         return Date().timeIntervalSince(startDate) // return number of seconds betwen startDate and Current Date
+    }
+
+    // MARK: - Authorization
+
+    /// Workouts need their own types on top of HealthKitManager's heart rate read
+    /// and live workout data save permissions.
+    public func requestAuthorization() async {
+        guard HKHealthStore.isHealthDataAvailable() else { return }
+
+        let energy = HKQuantityType(.activeEnergyBurned)
+        let distance = HKQuantityType(.distanceWalkingRunning)
+
+        do {
+            try await store.requestAuthorization(
+                toShare: [HKObjectType.workoutType(), energy, distance],
+                read: [HKQuantityType(.heartRate), energy, distance]
+            )
+        } catch {
+            isRunning = false
+        }
     }
     
     // MARK: - LifeCycle Control Functions
     
-    public func start() {
+    public func start(journeyID: UUID? = nil) {
         guard !isRunning else { return }
+        if let journeyID, self.journeyID == nil { self.journeyID = journeyID }
         
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = .walking
@@ -69,23 +91,43 @@ final class WorkoutSessionManager: NSObject {
         guard let session, let builder else { return }
         let endDate = Date()
         session.end()
-        builder.endCollection(withEnd: endDate) { [weak self] _,_ in
-            builder.finishWorkout() {_,_ in
-                Task { @MainActor in self?.finalize(end: endDate) }
-            }
+        builder.endCollection(withEnd: endDate) { [weak self] _, _ in
+            Task { @MainActor in self?.finishWorkout(end: endDate) }
         }
     }
     
-    public func finalize(end: Date) {
+    /// Saves the HKWorkout to Health. Hopping back to the MainActor first keeps the
+    /// non-Sendable builder from being captured by HealthKit's background callback.
+    private func finishWorkout(end: Date) {
+        builder?.finishWorkout { [weak self] _, _ in
+            Task { @MainActor in self?.finalize(end: end) }
+        }
+    }
+
+    private func finalize(end: Date) {
+        let bpmUnit = HKUnit.count().unitDivided(by: .minute())
+        let averageBPM = builder?.statistics(for: HKQuantityType(.heartRate))?
+            .averageQuantity()?.doubleValue(for: bpmUnit)
+
         let record = WorkoutRecord(
             start: startDate ?? end,
             end: end,
             activeEnergyKcal: activeEnergy,
             distanceMeters: distanceMeters,
-            averageHeartRate: heartRate > 0 ? heartRate : nil
+            averageHeartRate: averageBPM ?? (heartRate > 0 ? heartRate : nil),
+            journeyID: journeyID
         )
-        isRunning = false
+        reset()
         onFinish?(record)
+    }
+
+    private func reset() {
+        isRunning = false
+        heartRate = 0
+        activeEnergy = 0
+        distanceMeters = 0
+        startDate = nil
+        journeyID = nil
         session = nil
         builder = nil
     }

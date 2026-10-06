@@ -13,7 +13,7 @@ struct FieldJournalView: View {
                 if model.media.memos.isEmpty {
                     ContentUnavailableView(
                         "No memos yet",
-                        systemImage: "Waveform",
+                        systemImage: "waveform",
                         description:  Text("Record a voice or video memo to start your journey")
                     )
                 } else {
